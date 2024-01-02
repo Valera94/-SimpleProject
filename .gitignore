@@ -75,3 +75,10 @@ DerivedDataCache/*
 
 #Content
 SimpleProject/Content/*
+
+#Other file
+SimpleProject/Binaries/*
+SimpleProject/Intermediate/*
+SimpleProject/Saved/*
+SimpleProject/.vsconfig
+SimpleProject/SimpleProject.Sln.DotSettings.user
