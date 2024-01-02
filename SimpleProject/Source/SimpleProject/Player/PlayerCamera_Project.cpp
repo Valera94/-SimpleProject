@@ -31,7 +31,7 @@ APlayerCamera_Project::APlayerCamera_Project()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->SetRelativeRotation(FRotator(-60, 0, 0));
+	SpringArm->SetRelativeRotation(FRotator(-90, 0, 0));
 	SpringArm->TargetArmLength = 4000;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->bEnableCameraRotationLag = true;
@@ -241,8 +241,8 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 	{
 	case ETypeCameraView::ETGV_WorldCameraView:
 
-		SpringArmLengthMinMax = FVector2D(4000.f, 8000.f);
-		SpringArmAngleMinMax = FVector2D(-15.f, -85.f);
+		SpringArmLengthMinMax = FVector2D(200.f, 8000.f);
+		SpringArmAngleMinMax = FVector2D(-25.f, -85.f);
 		break;
 
 	case ETypeCameraView::ETGV_CastleView:

@@ -29,6 +29,9 @@ public:
 	UInputAction* WheelMiddleInputMouse;
 
 
+
+	//ToDo we can replace location this variable if its need
+
 	bool IsPressedMiddleMouse = false;
 	bool IsPressedWASDMovement = false;
 	float TargetArmLength = 0.f;

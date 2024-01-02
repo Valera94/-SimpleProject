@@ -12,6 +12,7 @@ enum class ETypeCameraView : uint8;
 
 /*
  * This class implements control in the game using the camera. This is the main control for the player.
+ * This entity stores information about the movement and binding of buttons.
  */
 UCLASS( BlueprintType,Blueprintable, Config = Game)
 class SIMPLEPROJECT_API APlayerCamera_Project : public APawn
