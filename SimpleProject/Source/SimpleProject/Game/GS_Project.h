@@ -4,32 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+#include "GeneralGameData.h"
 #include "GS_Project.generated.h"
 
-
-
-
-
-/*
- * *This "Enum" controls the camera view.
- */
-
-UENUM(BlueprintType, Category = "Prject|Enum")
-enum class ETypeCameraView : uint8
-{
-	//It is used as a global map of the world. ref "MountAndBlade"
-	ETGV_WorldCameraView UMETA(DisplayName = "WorldCameraView"),
-	//Overview of the castle boundary. 
-	ETGV_CastleView UMETA(DisplayName = "CastleView"),
-	//A local overview of a specific location. Like a plot in "Sims".
-	ETGV_LocalPlaceView UMETA(DisplayName = "LocalPlaceView"),
-};
-
-
-
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateChangeTypeCameraView, ETypeCameraView, TypeCameraView);
-
 
 
 /**

@@ -17,7 +17,10 @@ public class SimpleProject : ModuleRules
                 "InputCore",
                 "EnhancedInput", 
 
-                "UMG"
+                "UMG",
+
+                "UMGEditor",
+                "UnrealEd"
             });
 
         // Uncomment if you are using Slate UI

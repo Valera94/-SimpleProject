@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "SimpleProject\Game/GeneralGameData.h"
 #include "InputActionValue.h"
 #include "PlayerCamera_Project.generated.h"
-
-
-enum class ETypeCameraView : uint8;
 
 /*
  * This class implements control in the game using the camera. This is the main control for the player.

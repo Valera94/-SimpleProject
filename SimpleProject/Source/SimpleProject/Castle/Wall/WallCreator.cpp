@@ -97,6 +97,7 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 
 #pragma endregion
 
+
 #pragma region /* *Step 2 - calculate the length of right angles with correction for "AnglePosition" */
 
 	// if we have not created any direct blocks, then we use the "StartPosition" location.

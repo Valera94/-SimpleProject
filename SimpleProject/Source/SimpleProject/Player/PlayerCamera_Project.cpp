@@ -7,14 +7,12 @@
 #include "SimpleProject\Input\InputConfigData.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "InputAction.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "SimpleProject/Game/GS_Project.h"
 
 
@@ -55,7 +53,7 @@ void APlayerCamera_Project::BeginPlay()
 	{
 
 		L_GS_Project->DelegateChangeTypeCameraView.AddDynamic(this, &APlayerCamera_Project::Bind_ChangeTypeCameraView);
-		L_GS_Project->ChangeTypeCameraView(ETypeCameraView::ETGV_WorldCameraView);
+		L_GS_Project->ChangeTypeCameraView(ETypeCameraView::ETGV_LocalView);
 		GetLocalViewingPlayerController()->SetShowMouseCursor(true);
 
 		UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(GetLocalViewingPlayerController(), nullptr, EMouseLockMode::LockAlways, false);
@@ -239,19 +237,19 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 
 	switch (TypeCameraView)
 	{
-	case ETypeCameraView::ETGV_WorldCameraView:
+	case ETypeCameraView::ETGV_GlobalView:
 
 		SpringArmLengthMinMax = FVector2D(200.f, 8000.f);
 		SpringArmAngleMinMax = FVector2D(-25.f, -85.f);
 		break;
 
-	case ETypeCameraView::ETGV_CastleView:
+	case ETypeCameraView::ETGV_MiddleView:
 
 		SpringArmLengthMinMax = FVector2D(600.f, 2000.f);
 		SpringArmAngleMinMax = FVector2D(-35.f, -85.f);
 		break;
 
-	case ETypeCameraView::ETGV_LocalPlaceView:
+	case ETypeCameraView::ETGV_LocalView:
 
 		SpringArmLengthMinMax = FVector2D(200.f, 600.f);
 		SpringArmAngleMinMax = FVector2D(-35.f, -85.f);
