@@ -13,6 +13,7 @@
 #include "InputAction.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "SimpleProject/Game/GS_Project.h"
 
 
@@ -69,7 +70,7 @@ void APlayerCamera_Project::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	MoveUseTriggerTheViewportBorders(DeltaSeconds, 0.03f, SpringArm->TargetArmLength);
+	MoveUseTriggerTheViewportBorders(DeltaSeconds, SpringArm->TargetArmLength);
 	ChangeArmLength(DeltaSeconds);
 }
 
@@ -216,7 +217,7 @@ void APlayerCamera_Project::IA_WheelMiddleMouseInput(const FInputActionValue& Va
 				FVector2D(SpringArmLengthMinMax.X / Divide, SpringArmLengthMinMax.Y / Divide),
 				SpringArm->TargetArmLength);
 
-			
+
 			//We get the result for the next step with the changed value
 			InputConfigData->TargetArmLength = FMath::Clamp(
 				SpringArm->TargetArmLength + ChangeValue * L_ResultMapRange,
@@ -232,7 +233,7 @@ void APlayerCamera_Project::IA_WheelMiddleMouseInput(const FInputActionValue& Va
 
 void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCameraView)
 {
-	
+
 	//TODO When we have a clear idea of what we need, we can use "CurveData" to get information about the need for changes.
 
 	switch (TypeCameraView)
@@ -245,13 +246,13 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 
 	case ETypeCameraView::ETGV_MiddleView:
 
-		SpringArmLengthMinMax = FVector2D(600.f, 2000.f);
+		SpringArmLengthMinMax = FVector2D(200.f, 8000.f);
 		SpringArmAngleMinMax = FVector2D(-35.f, -85.f);
 		break;
 
 	case ETypeCameraView::ETGV_LocalView:
 
-		SpringArmLengthMinMax = FVector2D(200.f, 600.f);
+		SpringArmLengthMinMax = FVector2D(200.f, 8000.f);
 		SpringArmAngleMinMax = FVector2D(-35.f, -85.f);
 		break;
 
@@ -261,33 +262,35 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 	CurrentTypeCameraView = TypeCameraView;
 }
 
-void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& TargetPercentFromBorder, const float& DynamicChangeSpeed)
+void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
 {
 	if (InputConfigData->IsPressedWASDMovement == false)
 	{
+
 		/*
 	 **DeltaSecondScale			= used to adapt to frames per second and its changes.
-	 **TargetPercentFromBorder	= Clamp (0.01 , 0.07) trigger to move.
-	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLenght is usually used.
+	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLength is usually used.
 	*/
 
-	//Mouse Position.X < SizeViewport.X 0.05%
-		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * (FMath::Clamp(TargetPercentFromBorder, 0.01f, 0.07f)))
+	//Mouse Position.X < SizeViewport.X 0.05%   "MoveLeft"
+
+		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * 0.003f)
 		{
 			AddActorLocalOffset(FVector(0.f, DeltaSecondScale * FMath::Max(DynamicChangeSpeed, 1.f) * -2.f, 0.f));
 		}
-		//Mouse Position.X > SizeViewport.X 0.95%
-		else if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X > UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * (1.f - FMath::Clamp(TargetPercentFromBorder, 0.01f, 0.07f)))
+		//Mouse Position.X > SizeViewport.X 0.95% "MoveRight"
+		else if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X > UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * 0.995f)
 		{
 			AddActorLocalOffset(FVector(0.f, DeltaSecondScale * FMath::Max(DynamicChangeSpeed, 1.f) * 2.f, 0.f));
 		}
-		//Mouse Position.Y < SizeViewport.X 0.05%
-		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).Y < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().Y * (FMath::Clamp(TargetPercentFromBorder, 0.01f, 0.07f)))
+
+		//Mouse Position.Y < SizeViewport.X 0.05% "MoveUp"
+		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).Y < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().Y * 0.003f)
 		{
 			AddActorLocalOffset(FVector(DeltaSecondScale * FMath::Max(DynamicChangeSpeed, 1.f) * 2.f, 0.f, 0.f));
 		}
-		//Mouse Position.Y > SizeViewport.X 0.95%
-		else if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).Y > UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().Y * (1.f - FMath::Clamp(TargetPercentFromBorder, 0.01f, 0.07f)))
+		//Mouse Position.Y > SizeViewport.X 0.95% "MoveDown"
+		else if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).Y > UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().Y * 0.995f)
 		{
 			AddActorLocalOffset(FVector(DeltaSecondScale * FMath::Max(DynamicChangeSpeed, 1.f) * -2.f, 0.f, 0.f));
 		}
@@ -297,7 +300,7 @@ void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaS
 void APlayerCamera_Project::ChangeArmLength(const float& DeltaSecond)
 {
 
-	if(InputConfigData->TargetArmLength != 0.f && InputConfigData->TargetArmLength != SpringArm->TargetArmLength)
+	if (InputConfigData->TargetArmLength != 0.f && InputConfigData->TargetArmLength != SpringArm->TargetArmLength)
 	{
 		SpringArm->TargetArmLength = FMath::InterpEaseInOut(SpringArm->TargetArmLength, InputConfigData->TargetArmLength, DeltaSecond, 0.2f);
 	}

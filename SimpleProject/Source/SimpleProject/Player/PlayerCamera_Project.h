@@ -91,7 +91,7 @@ private:
 	 **TargetPercentFromBorder	= Clamp (0.01 , 0.07) trigger to move.
 	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, Spring Arm Lenght is usually used.
 	*/
-	void MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& TargetPercentFromBorder, const float& DynamicChangeSpeed);
+	void MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed);
 
 	void ChangeArmLength(const float& DeltaSecond);
 };

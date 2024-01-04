@@ -17,15 +17,7 @@ void AProjectHUD::BeginPlay()
 	{
 		CreateWidget(GetWorld(), UW_MainProject)->AddToViewport();
 	}
-	
 
-	//CreateWidget(GetWorld(), UUW_MainProject::StaticClass())->AddToViewport();
-		//UW_MainProject = ;
-		//if (UW_MainProject)
-		//{
-		//	UW_MainProject->AddToViewport();
-		//}
-	
 }
 
 void AProjectHUD::ChangeTypeCameraView(ETypeCameraView SelectNewTypeCamera)
