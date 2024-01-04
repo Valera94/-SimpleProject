@@ -27,63 +27,6 @@
 ![image](https://github.com/Valera94/-SimpleProject/assets/91465697/3166136d-3de6-4fbf-9577-aedb308873bc)
 
 # Architectural map of the game
-+ Castle.
-   - The place of accumulation of resources
-     - Arsenal with inventory (Armory)
-     - A barn with resources (Food)
-     - Resources for production (The rest)
-   - The place where new units are received
-     - Training camp
-      - Archers
-      - Spearmen
-      - The swords of Men
-      - Cavalry
-      - Etc.
-   - Mercenaries
-      - Captured lands
-      - Taverns
-      - Buying on the side
-      - Etc.
-   - Summoning Magic
-      - something..
-   - Population
-      - building
-   - Resources
-     - Getting the Primary Resource
-       - Apple Orchard
-       - Dairy Farm
-       - Sawmill
-       - The quarry
-       - Metal mining
-       - Etc .
-   - Creating another resource using the primary resource
-     - Protective structures
-       - Wall protection
-       - Ballistics
-       - Etc.
-     - Equipment
-       - Armor
-         - for archers
-         - Infantrymen
-         - Etc.
-       - Weapon
-         - Bow/Crossbow
-         - Spear
-         - Swords
-         - Etc.
-       - Shells
-         - Explosive Barrels
-         - Barrels of fire
-         - Etc.
-       - Currency Resources
-         - Gold
-         - Influence
-  - Service
-    - The tavern
-    - Market
-    - Transportation of goods
-    - The arrangement of the castle
-
 
 > [!NOTE]
 > An approximate tree-like logical relationship.
