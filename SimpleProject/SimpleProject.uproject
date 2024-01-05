@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"UMG"
+				"UMG",
+				"GameplayAbilities"
 			]
 		}
 	],
@@ -25,6 +26,10 @@
 		},
 		{
 			"Name": "LightWeightInstancesEditor",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]

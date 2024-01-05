@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NativeGameplayTags.h"
 #include "UObject/NoExportTypes.h"
 #include "GeneralGameData.generated.h"
 
@@ -103,6 +104,16 @@ struct FDataResourcesRest
 #pragma endregion
 
 
+
+namespace ProjectGameplayTags
+{
+	//building
+	SIMPLEPROJECT_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Building_Attack);
+
+	//Squad
+	SIMPLEPROJECT_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Squad_Attack);
+
+};
 
 UCLASS()
 class SIMPLEPROJECT_API UGeneralGameData : public UObject

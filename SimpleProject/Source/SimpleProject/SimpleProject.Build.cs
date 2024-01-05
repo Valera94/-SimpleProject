@@ -23,6 +23,14 @@ public class SimpleProject : ModuleRules
                 "UnrealEd"
             });
 
+        //Gameplay Abilities
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "GameplayAbilities", 
+            "GameplayTags", 
+            "GameplayTasks"
+        });
+
         // Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		
