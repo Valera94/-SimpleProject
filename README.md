@@ -30,5 +30,9 @@
 
 > [!NOTE]
 > An approximate tree-like logical relationship.
+>
 > 
-![image](https://github.com/Valera94/-SimpleProject/assets/91465697/23b560ed-a852-449d-aead-5ac052e16333)
+![image](https://github.com/Valera94/-SimpleProject/assets/91465697/cf6f5203-3445-4a22-8205-55ef97d6215c)
+![image](https://github.com/Valera94/-SimpleProject/assets/91465697/fb0cad9a-902a-453b-95f7-50d124d56be3)
+
+
