@@ -10,6 +10,7 @@
  * 
  */
 
+#pragma region /* *GeneralGameData|Enum */
 
  /*
   * *This "Enum" controls the camera view.
@@ -27,6 +28,79 @@ enum class ETypeCameraView : uint8
 	//A local overview of a specific location. Like a plot in "Sims".
 	ETGV_LocalView UMETA(DisplayName = "LocalView"),
 };
+#pragma endregion
+
+
+
+
+
+
+
+#pragma region /* *GeneralGameData|DataResources */
+
+//ToDo To display 2D images, we need to use an atlas.
+
+USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources|InformationView")
+struct FResourcesInformationView
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category= "Setting")
+	FVector2D UVCoordinateForTexture;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Setting")
+	TSoftObjectPtr<UStaticMesh> StaticMesh;
+
+};
+
+
+
+/*
+ *The place of accumulation of resources for different categorizations.
+ */
+
+USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
+struct FDataResourcesFood
+{
+	GENERATED_BODY()
+
+	//It is necessary to put a pre-prepared material with an atlas texture into this material.
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Setting")
+	UMaterialInstance* MaterialInstanceFood; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	TArray<FResourcesInformationView> ResourcesInformationView;
+
+};
+
+USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
+struct FDataResourcesEquipment
+{
+
+GENERATED_BODY()
+
+	//It is necessary to put a pre-prepared material with an atlas texture into this material.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	UMaterialInstance* MaterialInstanceWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	TArray<FResourcesInformationView> ResourcesInformationView;
+};
+
+USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
+struct FDataResourcesRest
+{
+	GENERATED_BODY()
+
+	//It is necessary to put a pre-prepared material with an atlas texture into this material.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	UMaterialInstance* MaterialInstanceRest;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	TArray<FResourcesInformationView> ResourcesInformationView;
+};
+#pragma endregion
 
 
 
