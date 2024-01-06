@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameplayTagsManager.h"
 #include "GeneralGameData.h"
+#include "GameplayTagsManager.h"
+
 
 namespace ProjectGameplayTags
 {

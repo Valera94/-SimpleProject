@@ -115,7 +115,7 @@ void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 void APlayerCamera_Project::IA_MoveWASD(const FInputActionValue& Value)
 {
-	if (Controller != nullptr)
+	if (Controller != nullptr && CurrentTypeCameraView != ETypeCameraView::ETGV_Menu)
 	{
 		const FVector2D MoveValue = Value.Get<FVector2D>();
 
@@ -264,10 +264,10 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 
 void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
 {
-	if (InputConfigData->IsPressedWASDMovement == false)
+	if (InputConfigData->IsPressedWASDMovement == false && CurrentTypeCameraView!=ETypeCameraView::ETGV_Menu)
 	{
 
-		/*
+	/*
 	 **DeltaSecondScale			= used to adapt to frames per second and its changes.
 	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLength is usually used.
 	*/
