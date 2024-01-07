@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NativeGameplayTags.h"
 #include "UObject/NoExportTypes.h"
 #include "GeneralGameData.generated.h"
 
@@ -21,6 +22,8 @@ enum class ETypeCameraView : uint8
 {
 	//ToDo Change after understanding the naming
 
+	//It is used as a Menu.
+	ETGV_Menu UMETA(DisplayName = "Menu"),
 	//It is used as a global map of the world. ref "MountAndBlade"
 	ETGV_GlobalView UMETA(DisplayName = "GlobalView"),
 	//Overview of the castle boundary. 
@@ -103,6 +106,16 @@ struct FDataResourcesRest
 #pragma endregion
 
 
+
+namespace ProjectGameplayTags
+{
+	//building
+	SIMPLEPROJECT_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Building_Attack);
+
+	//Squad
+	SIMPLEPROJECT_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Squad_Attack);
+
+};
 
 UCLASS()
 class SIMPLEPROJECT_API UGeneralGameData : public UObject

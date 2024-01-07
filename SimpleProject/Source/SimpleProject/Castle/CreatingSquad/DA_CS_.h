@@ -9,6 +9,7 @@
 /**
  * DataAsset for using A_CreatingSquad
  */
+
 UCLASS()
 class SIMPLEPROJECT_API UDA_CS_ : public UDataAsset
 {

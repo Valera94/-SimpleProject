@@ -111,11 +111,17 @@ void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	// Wheel Middle Mouse
 	L_EnhancedInputComponent->BindAction(InputConfigData->WheelMiddleInputMouse, ETriggerEvent::Triggered, this, &APlayerCamera_Project::IA_WheelMiddleMouseInput);
+
+	// Left Click Mouse
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputLeftClickMouse, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_LeftClickMouseInput);
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputLeftClickMouse, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_LeftClickMouseInput);
+
+
 }
 
 void APlayerCamera_Project::IA_MoveWASD(const FInputActionValue& Value)
 {
-	if (Controller != nullptr)
+	if (Controller != nullptr && CurrentTypeCameraView != ETypeCameraView::ETGV_Menu)
 	{
 		const FVector2D MoveValue = Value.Get<FVector2D>();
 
@@ -183,6 +189,7 @@ void APlayerCamera_Project::IA_MiddleMouseInput(const FInputActionValue& Value)
 		}
 	}
 }
+
 void APlayerCamera_Project::IA_MiddleMouseTrigger(const FInputActionValue& Value)
 {
 	//SetMousePositionToMiddleViewport	
@@ -227,7 +234,25 @@ void APlayerCamera_Project::IA_WheelMiddleMouseInput(const FInputActionValue& Va
 	}
 }
 
+void APlayerCamera_Project::IA_LeftClickMouseInput(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
 
+		const float ChangeValue = Value.Get<bool>();
+
+
+		if (ChangeValue)
+		{
+			Delegate_ChangedStatusLeftClick.Broadcast(ELeftClickStatus::LCS_PressedLeftClick);
+		}
+		else
+		{
+
+			Delegate_ChangedStatusLeftClick.Broadcast(ELeftClickStatus::LCS_UnPressedLeftClick);
+		}
+	}
+}
 #pragma endregion
 
 
@@ -264,16 +289,15 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 
 void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
 {
-	if (InputConfigData->IsPressedWASDMovement == false)
+	if (InputConfigData->IsPressedWASDMovement == false && CurrentTypeCameraView!=ETypeCameraView::ETGV_Menu)
 	{
 
-		/*
+	/*
 	 **DeltaSecondScale			= used to adapt to frames per second and its changes.
 	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLength is usually used.
 	*/
 
-	//Mouse Position.X < SizeViewport.X 0.05%   "MoveLeft"
-
+		//Mouse Position.X < SizeViewport.X 0.05%   "MoveLeft"
 		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * 0.003f)
 		{
 			AddActorLocalOffset(FVector(0.f, DeltaSecondScale * FMath::Max(DynamicChangeSpeed, 1.f) * -2.f, 0.f));

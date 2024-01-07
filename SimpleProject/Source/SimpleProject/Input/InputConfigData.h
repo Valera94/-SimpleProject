@@ -28,7 +28,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputAction* WheelMiddleInputMouse;
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* InputLeftClickMouse;
 
 	//ToDo we can replace location this variable if its need
 
