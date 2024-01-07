@@ -8,14 +8,51 @@
 #include "InputActionValue.h"
 #include "PlayerCamera_Project.generated.h"
 
+
+
+
+UENUM(BlueprintType)
+enum class ELeftClickStatus : uint8
+{
+	LCS_None UMETA(DisplayName = "None"),
+	LCS_PressedLeftClick UMETA(DisplayName = "PressedLeftClick"),
+	LCS_UnPressedLeftClick UMETA(DisplayName = "UnPressedLeftClick")
+};
+
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLeftClickStatus, ELeftClickStatus, ChangedStatusLeftClick);
+
+
 /*
  * This class implements control in the game using the camera. This is the main control for the player.
  * This entity stores information about the movement and binding of buttons.
  */
-UCLASS( BlueprintType,Blueprintable, Config = Game)
+
+UCLASS(BlueprintType, Blueprintable, Config = Game)
 class SIMPLEPROJECT_API APlayerCamera_Project : public APawn
 {
 	GENERATED_BODY()
+
+
+#pragma region /* *Delegate */
+
+public:
+
+	// Pressed Unpressed
+	UPROPERTY(BlueprintAssignable)
+	FLeftClickStatus Delegate_ChangedStatusLeftClick;
+
+
+//BindToDelegate
+private:
+
+	UFUNCTION()
+	void Bind_ChangeTypeCameraView(ETypeCameraView TypeCameraView);
+
+
+
+#pragma endregion
 
 private:
 
@@ -26,13 +63,6 @@ private:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void Tick(float DeltaSeconds) override;
-
-#pragma region /* *BindDelegate */
-
-	UFUNCTION()
-	void Bind_ChangeTypeCameraView(ETypeCameraView TypeCameraView);
-
-#pragma endregion
 
 #pragma region /* *Body Component */
 
@@ -68,6 +98,9 @@ private:
 	//Handle Wheel Middle Mouse
 	void IA_WheelMiddleMouseInput(const FInputActionValue& Value);
 
+	//Handle Wheel Middle Mouse
+	void IA_LeftClickMouseInput(const FInputActionValue& Value);
+
 #pragma endregion
 
 
@@ -80,7 +113,7 @@ private:
 	FVector2D SpringArmAngleMinMax;
 
 
-	
+
 	//CurrentTypeCameraView = It is used to control between the camera mode switches and the necessary visual implementation.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RTS Camera|Information|BindDelegate", meta = (AllowPrivateAccess))
 	ETypeCameraView CurrentTypeCameraView;

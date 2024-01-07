@@ -3,13 +3,28 @@
 
 #include "WallCreator.h"
 
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SimpleProject/Player/PlayerCamera_Project.h"
+
+void AWallCreator::Bind_ChangeStatusLeftClick(ELeftClickStatus ChangedStatusLeftClick)
+{
+	Bind_ChangedStatusLeftClick = ChangedStatusLeftClick;
+}
 
 // Sets default values
 AWallCreator::AWallCreator()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+
+	ISM_90 = CreateDefaultSubobject<UInstancedStaticMeshComponent>("ISM_90");
+	ISM_90->SetupAttachment(GetRootComponent());
+
+	ISM_45 = CreateDefaultSubobject<UInstancedStaticMeshComponent>("ISM_45");
+	ISM_45->SetupAttachment(GetRootComponent());
 
 }
 
@@ -18,6 +33,15 @@ void AWallCreator::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	//When we create a given actor, we must subscribe them to the necessary player inputs.
+	if (APlayerCamera_Project* PlayerCamera_Project = Cast<APlayerCamera_Project>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+	{
+		PlayerCamera_Project->Delegate_ChangedStatusLeftClick.AddUniqueDynamic(this, &AWallCreator::Bind_ChangeStatusLeftClick);
+	}
+
+	//AddInstance For Visualisation
+	ISM_90->AddInstance(GetActorTransform());
 }
 
 // Called every frame
@@ -25,9 +49,66 @@ void AWallCreator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FHitResult HitResult;
+
+	if (StatusWallCreator == EStatusWallCreator::Create)
+	{
+		switch (Bind_ChangedStatusLeftClick)
+		{
+		case ELeftClickStatus::LCS_None:
+
+			ChangeActorLocation();
+
+			break;
+
+
+
+		case ELeftClickStatus::LCS_PressedLeftClick:
+
+			if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
+			{
+				CreateWall(ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2, GetActorLocation(), FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2),
+					UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2), HitResult.Location.Z));
+			}
+
+			break;
+
+
+
+		case ELeftClickStatus::LCS_UnPressedLeftClick:
+
+			PrimaryActorTick.bCanEverTick = false;
+
+			//When we create a given actor, we must subscribe them to the necessary player inputs.
+			if (APlayerCamera_Project* PlayerCamera_Project = Cast<APlayerCamera_Project>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+			{
+				PlayerCamera_Project->Delegate_ChangedStatusLeftClick.Remove(this, "Bind_ChangeStatusLeftClick");
+			}
+
+			break;
+		}
+	}
+	else
+	{
+		PrimaryActorTick.bCanEverTick = false;
+	}
 }
 
-void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosition, const FVector& EndPosition, TArray<FVector>& ArrAngle90, TArray<FVector>& ArrAngle45, FRotator& RotatorForAngle45)
+void AWallCreator::ChangeActorLocation()
+{
+	if (Bind_ChangedStatusLeftClick == ELeftClickStatus::LCS_None)
+	{
+		FHitResult HitResult;
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+		if (HitResult.IsValidBlockingHit())
+		{
+			SetActorLocation(FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2),
+				UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2), HitResult.Location.Z));
+		}
+	}
+}
+
+void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosition, const FVector& EndPosition)
 {
 	//ToDo Instead of a simple cleansing, perhaps we could use a more
 	//ToDo thoughtful mechanic without recalculating everything all over again,
@@ -53,6 +134,9 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 	  *	The "AnglePosition" is formed equally in combination with the main coordinate "Length X == Length Y".
 	  */
 
+
+
+
 #pragma region /* *Initialization variable */
 
 
@@ -64,6 +148,10 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 
 	const float L_AbsDistanceX = UKismetMathLibrary::Abs(StartPosition.X - EndPosition.X);
 	const float L_AbsDistanceY = UKismetMathLibrary::Abs(StartPosition.Y - EndPosition.Y);
+
+	//variable data for ISM
+	TArray<FVector> ArrAngle90, ArrAngle45;
+	FRotator RotatorForAngle45;
 
 #pragma endregion
 
@@ -104,26 +192,52 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 	// This will allow us to create blocks at 45 degrees.
 	const FVector L_StartCreateAnglePosition = ArrAngle90.IsEmpty() ? StartPosition : ArrAngle90.Last(0);
 
-	const int L_CycleLastIndexAngle45 = UKismetMathLibrary::FFloor(UKismetMathLibrary::Vector_Distance(L_StartCreateAnglePosition, EndPosition) / L_Hypotenuse);
-
-	if (L_CycleLastIndexAngle45 > 0)
+	
+	const int L_CycleLenghtAngle45 = UKismetMathLibrary::FFloor(UKismetMathLibrary::Vector_Distance(L_StartCreateAnglePosition, EndPosition) / L_Hypotenuse);
+	if (L_CycleLenghtAngle45 != 0)
 	{
-
-
+		
 		const float L_FindedLookYawRotate = UKismetMathLibrary::FindLookAtRotation(L_StartCreateAnglePosition, EndPosition).Yaw;
 		const float L_AdaptationYawRotateTo45Angle = L_FindedLookYawRotate - (UKismetMathLibrary::GenericPercent_FloatFloat(L_FindedLookYawRotate, 45.f));
 
-		RotatorForAngle45 = FRotator(0.f, L_AdaptationYawRotateTo45Angle, 0.f);
+		RotatorForAngle45 = FRotator(0.f, L_FindedLookYawRotate, 0.f);
 
 		ArrAngle45.Add(L_StartCreateAnglePosition + (FVector(L_SelectFloatAngle45XY.X, L_SelectFloatAngle45XY.Y, 0.f)));
 
-
-
-		for (int L_IndexAngle45 = 1; L_IndexAngle45 < L_CycleLastIndexAngle45; L_IndexAngle45++)
+		for (int L_IndexAngle45 = 1; L_IndexAngle45 < L_CycleLenghtAngle45; L_IndexAngle45++)
 		{
 			ArrAngle45.Add((UKismetMathLibrary::GetForwardVector(RotatorForAngle45) * L_Hypotenuse + ArrAngle45.Last(0)));
 		}
+
+
+
 	}
+	
+
 #pragma endregion
+
+#pragma region /* *Step 3 - Create Wall */
+
+	ISM_45->ClearInstances();
+	ISM_90->ClearInstances();
+
+	if (!ArrAngle90.IsEmpty())
+	{
+		for (int Index90 = 0; Index90 < ArrAngle90.Num(); Index90++)
+		{
+			ISM_90->AddInstance(FTransform(FRotator::ZeroRotator, ArrAngle90[Index90], FVector::One()), true);
+		}
+	};
+
+	if (!ArrAngle45.IsEmpty())
+	{
+		for (int Index45 = 0; Index45 < ArrAngle45.Num(); Index45++)
+		{
+			ISM_45->AddInstance(FTransform(RotatorForAngle45, ArrAngle45[Index45], FVector::One()), true);
+		}
+	};
+
+#pragma endregion
+
 }
 
