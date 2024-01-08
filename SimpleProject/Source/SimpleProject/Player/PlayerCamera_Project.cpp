@@ -14,6 +14,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SimpleProject/Castle/CreateBuilding/AbstractCreateBuilding.h"
 #include "SimpleProject/Game/GS_Project.h"
 
 
@@ -77,6 +78,7 @@ void APlayerCamera_Project::Tick(float DeltaSeconds)
 
 #pragma region /* *Realisation Input System */
 
+
 void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -105,7 +107,6 @@ void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	// *Middle Mouse Input
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputMiddleMouse, ETriggerEvent::Triggered, this, &APlayerCamera_Project::IA_MiddleMouseTrigger);
 
-
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputMiddleMouse, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_MiddleMouseInput);
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputMiddleMouse, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_MiddleMouseInput);
 
@@ -117,7 +118,14 @@ void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputLeftClickMouse, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_LeftClickMouseInput);
 
 
+	// Right Click Mouse
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputRightClickMouse, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_RightClickMouseInput);
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputRightClickMouse, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_RightClickMouseInput);
+
+
 }
+
+
 
 void APlayerCamera_Project::IA_MoveWASD(const FInputActionValue& Value)
 {
@@ -127,13 +135,14 @@ void APlayerCamera_Project::IA_MoveWASD(const FInputActionValue& Value)
 
 		if (MoveValue != FVector2D::Zero())
 		{
-
-			InputConfigData->IsPressedWASDMovement = true;
+			OnChangeStatusCLick(EWhatWasPressed::WWP_WASDClick, EClickStatus::CS_Pressed);
+			
 			AddActorWorldOffset(GetActorForwardVector() * MoveValue.X * SpringArm->TargetArmLength + GetActorRightVector() * MoveValue.Y * SpringArm->TargetArmLength);
 		}
 		else
 		{
-			InputConfigData->IsPressedWASDMovement = false;
+			OnChangeStatusCLick(EWhatWasPressed::WWP_WASDClick, EClickStatus::CS_UnPressed);
+			
 		}
 
 	}
@@ -141,9 +150,8 @@ void APlayerCamera_Project::IA_MoveWASD(const FInputActionValue& Value)
 
 void APlayerCamera_Project::IA_TurnMouse(const FInputActionValue& Value)
 {
-	if (Controller != nullptr && InputConfigData->IsPressedMiddleMouse == true)
+	if (Controller != nullptr && InputConfigData->GetStatusInput(EWhatWasPressed::WWP_MiddleClick) == EClickStatus::CS_Pressed)
 	{
-
 		const FVector2D LookValue = Value.Get<FVector2D>();
 
 		if (LookValue.X != 0.f)
@@ -159,27 +167,30 @@ void APlayerCamera_Project::IA_TurnMouse(const FInputActionValue& Value)
 
 		}
 	}
+
+
+
 }
 
 void APlayerCamera_Project::IA_MiddleMouseInput(const FInputActionValue& Value)
 {
 	if (Controller != nullptr)
 	{
-		InputConfigData->IsPressedMiddleMouse = Value.Get<bool>();
-
 		if (Value.Get<bool>() == true)
 		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_MiddleClick, EClickStatus::CS_Pressed);
+
 			GetLocalViewingPlayerController()->SetShowMouseCursor(false);
 
 			//SetMousePositionToMiddleViewport	
 			int32 X, Y;
 			GetLocalViewingPlayerController()->GetViewportSize(X, Y);
 			GetLocalViewingPlayerController()->SetMouseLocation(X / 2, Y / 2);
-
-
 		}
 		else
 		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_MiddleClick, EClickStatus::CS_UnPressed);
+
 			//SetMousePositionToMiddleViewport	
 			int32 X, Y;
 			GetLocalViewingPlayerController()->GetViewportSize(X, Y);
@@ -241,18 +252,38 @@ void APlayerCamera_Project::IA_LeftClickMouseInput(const FInputActionValue& Valu
 
 		const float ChangeValue = Value.Get<bool>();
 
-
 		if (ChangeValue)
 		{
-			Delegate_ChangedStatusLeftClick.Broadcast(ELeftClickStatus::LCS_PressedLeftClick);
+			OnChangeStatusCLick(EWhatWasPressed::WWP_LeftClick, EClickStatus::CS_Pressed);
 		}
 		else
 		{
-
-			Delegate_ChangedStatusLeftClick.Broadcast(ELeftClickStatus::LCS_UnPressedLeftClick);
+			OnChangeStatusCLick(EWhatWasPressed::WWP_LeftClick, EClickStatus::CS_UnPressed);
 		}
 	}
 }
+void APlayerCamera_Project::IA_RightClickMouseInput(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+
+		const float ChangeValue = Value.Get<bool>();
+
+		if (ChangeValue)
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_RightClick, EClickStatus::CS_Pressed);
+			GEngine->AddOnScreenDebugMessage(0, 3.f, FColor::Red, "sad");
+		}
+		else
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_RightClick, EClickStatus::CS_UnPressed);
+		}
+	}
+
+
+}
+
+
 #pragma endregion
 
 
@@ -289,13 +320,13 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 
 void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
 {
-	if (InputConfigData->IsPressedWASDMovement == false && CurrentTypeCameraView!=ETypeCameraView::ETGV_Menu)
+	if (InputConfigData->GetStatusInput(EWhatWasPressed::WWP_WASDClick) == EClickStatus::CS_UnPressed && CurrentTypeCameraView != ETypeCameraView::ETGV_Menu)
 	{
 
-	/*
-	 **DeltaSecondScale			= used to adapt to frames per second and its changes.
-	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLength is usually used.
-	*/
+		/*
+		 **DeltaSecondScale			= used to adapt to frames per second and its changes.
+		 **DynamicChangeSpeed		= Used to change the speed depending on the given value, SpringArmLength is usually used.
+		*/
 
 		//Mouse Position.X < SizeViewport.X 0.05%   "MoveLeft"
 		if (UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()).X < UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize().X * 0.003f)

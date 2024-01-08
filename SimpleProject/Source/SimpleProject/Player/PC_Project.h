@@ -6,12 +6,16 @@
 #include "GameFramework/PlayerController.h"
 #include "PC_Project.generated.h"
 
-/**
+/*
  * Base PlayerController.
  */
+
 UCLASS()
 class SIMPLEPROJECT_API APC_Project : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+
+
+
 };

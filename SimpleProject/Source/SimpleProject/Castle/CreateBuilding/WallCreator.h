@@ -3,38 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AbstractCreateBuilding.h"
 #include "WallCreator.generated.h"
 
 
-enum class ELeftClickStatus : uint8;
 
-UENUM(BlueprintType, Category = "WallCreator")
-enum class EStatusWallCreator :uint8
-{
-	Ready,
-	Create,
-};
+
+
 
 UCLASS()
-class SIMPLEPROJECT_API AWallCreator : public AActor
+class SIMPLEPROJECT_API AWallCreator : public AAbstractCreateBuilding
 {
 	GENERATED_BODY()
 
-#pragma region /* *BindDelegate  */
 
-	UFUNCTION()
-	void Bind_ChangeStatusLeftClick(ELeftClickStatus ChangedStatusLeftClick);
-
-protected:
-
-	UPROPERTY(BlueprintReadOnly, Category = "WallCreator|InformationAboutClick", meta = (AllowPrivateAccess))
-	ELeftClickStatus Bind_ChangedStatusLeftClick;
-
-	UPROPERTY(BlueprintReadOnly, Category = "WallCreator|InformationAboutClick", meta = (AllowPrivateAccess, ExposeOnSpawn))
-	EStatusWallCreator StatusWallCreator = EStatusWallCreator::Ready;
-
-#pragma endregion
 
 
 public:
@@ -58,8 +40,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "WallCreator")
-	void ChangeActorLocation();
+
 
 	UFUNCTION(BlueprintCallable, Category = "WallCreator")
 	void CreateWall(const float& BoundsMesh, const FVector& StartPosition, const FVector& EndPosition);

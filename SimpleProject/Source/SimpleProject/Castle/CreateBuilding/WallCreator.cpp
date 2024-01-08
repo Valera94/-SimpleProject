@@ -8,10 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "SimpleProject/Player/PlayerCamera_Project.h"
 
-void AWallCreator::Bind_ChangeStatusLeftClick(ELeftClickStatus ChangedStatusLeftClick)
-{
-	Bind_ChangedStatusLeftClick = ChangedStatusLeftClick;
-}
+
 
 // Sets default values
 AWallCreator::AWallCreator()
@@ -34,12 +31,6 @@ void AWallCreator::BeginPlay()
 	Super::BeginPlay();
 
 
-	//When we create a given actor, we must subscribe them to the necessary player inputs.
-	if (APlayerCamera_Project* PlayerCamera_Project = Cast<APlayerCamera_Project>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
-	{
-		PlayerCamera_Project->Delegate_ChangedStatusLeftClick.AddUniqueDynamic(this, &AWallCreator::Bind_ChangeStatusLeftClick);
-	}
-
 	//AddInstance For Visualisation
 	ISM_90->AddInstance(GetActorTransform());
 }
@@ -51,61 +42,24 @@ void AWallCreator::Tick(float DeltaTime)
 
 	FHitResult HitResult;
 
-	if (StatusWallCreator == EStatusWallCreator::Create)
+
+	if (InputConfigData->GetStatusInput(EWhatWasPressed::WWP_LeftClick) == EClickStatus::CS_UnPressed)
 	{
-		switch (Bind_ChangedStatusLeftClick)
+		if(ISM_90->GetInstanceCount()>=2 || ISM_45->GetInstanceCount()>=1)
 		{
-		case ELeftClickStatus::LCS_None:
-
-			ChangeActorLocation();
-
-			break;
-
-
-
-		case ELeftClickStatus::LCS_PressedLeftClick:
-
-			if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
-			{
-				CreateWall(ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2, GetActorLocation(), FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2),
-					UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2), HitResult.Location.Z));
-			}
-
-			break;
-
-
-
-		case ELeftClickStatus::LCS_UnPressedLeftClick:
-
-			PrimaryActorTick.bCanEverTick = false;
-
-			//When we create a given actor, we must subscribe them to the necessary player inputs.
-			if (APlayerCamera_Project* PlayerCamera_Project = Cast<APlayerCamera_Project>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
-			{
-				PlayerCamera_Project->Delegate_ChangedStatusLeftClick.Remove(this, "Bind_ChangeStatusLeftClick");
-			}
-
-			break;
+			//ToDo Send To ManagerInstance
 		}
+		ChangeActorLocation();
 	}
 	else
 	{
-		PrimaryActorTick.bCanEverTick = false;
-	}
-}
-
-void AWallCreator::ChangeActorLocation()
-{
-	if (Bind_ChangedStatusLeftClick == ELeftClickStatus::LCS_None)
-	{
-		FHitResult HitResult;
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
-		if (HitResult.IsValidBlockingHit())
+		if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
 		{
-			SetActorLocation(FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2),
-				UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, ISM_90->GetStaticMesh()->GetBounds().BoxExtent.X * 2), HitResult.Location.Z));
+			CreateWall(GridStep * 2, GetActorLocation(), FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, GridStep * 2),
+				UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, GridStep * 2), HitResult.Location.Z));
 		}
 	}
+
 }
 
 void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosition, const FVector& EndPosition)
@@ -198,7 +152,6 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 	{
 		
 		const float L_FindedLookYawRotate = UKismetMathLibrary::FindLookAtRotation(L_StartCreateAnglePosition, EndPosition).Yaw;
-		const float L_AdaptationYawRotateTo45Angle = L_FindedLookYawRotate - (UKismetMathLibrary::GenericPercent_FloatFloat(L_FindedLookYawRotate, 45.f));
 
 		RotatorForAngle45 = FRotator(0.f, L_FindedLookYawRotate, 0.f);
 
@@ -209,10 +162,7 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 			ArrAngle45.Add((UKismetMathLibrary::GetForwardVector(RotatorForAngle45) * L_Hypotenuse + ArrAngle45.Last(0)));
 		}
 
-
-
 	}
-	
 
 #pragma endregion
 
@@ -240,4 +190,3 @@ void AWallCreator::CreateWall(const float& BoundsMesh, const FVector& StartPosit
 #pragma endregion
 
 }
-
