@@ -39,21 +39,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
+	UFUNCTION(BlueprintCallable, Category = "CreateBuilding")
+	void ChangeSelectedMesh(UStaticMesh* SelectedMesh);
 
-#pragma region /* *Standardization */
+protected:
 
-	//Value, for GridLocation.
-	UPROPERTY(BlueprintReadOnly)
-	float GridStep= 50.f;
+	//SelectedStaticMesh from UI
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = "Components",meta=(AllowPrivateAccess))
+	UStaticMeshComponent* SelectedStaticMesh;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ExposeOnSpawn))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	UInputConfigData* InputConfigData;
+
 
 	UFUNCTION()
 	virtual void Bind_ChangeStatusClick(const EWhatWasPressed& WhatWasPressed, const EClickStatus& ClickStatus);
 
 	UFUNCTION(BlueprintCallable, Category = "CreateBuilding")
 	void ChangeActorLocation();
+
+
+	//Value, for GridLocation.
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
+	float GridStep= 20.f;
+
+
 
 };

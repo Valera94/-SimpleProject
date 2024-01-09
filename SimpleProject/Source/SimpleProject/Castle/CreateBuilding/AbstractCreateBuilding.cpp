@@ -3,6 +3,7 @@
 
 #include "AbstractCreateBuilding.h"
 
+#include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SimpleProject/Player/PlayerCamera_Project.h"
@@ -12,7 +13,11 @@
 AAbstractCreateBuilding::AAbstractCreateBuilding()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	SelectedStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("SelectedStaticMesh");
+	SelectedStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SelectedStaticMesh->SetupAttachment(GetRootComponent());
 
 }
 
@@ -36,6 +41,13 @@ void AAbstractCreateBuilding::Tick(float DeltaTime)
 
 }
 
+void AAbstractCreateBuilding::ChangeSelectedMesh (UStaticMesh* SelectedMesh) 
+{
+	SelectedStaticMesh->SetStaticMesh(SelectedMesh);
+
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void AAbstractCreateBuilding::Bind_ChangeStatusClick(const EWhatWasPressed& WhatWasPressed,
 	const EClickStatus& ClickStatus)
 {
@@ -56,6 +68,17 @@ void AAbstractCreateBuilding::Bind_ChangeStatusClick(const EWhatWasPressed& What
 		else
 		{
 			SetActorHiddenInGame(false);
+		}
+		break;
+
+	case EWhatWasPressed::WWP_LeftClick:
+		if (ClickStatus == EClickStatus::CS_Pressed)
+		{
+			SelectedStaticMesh->SetHiddenInGame(true);
+		}
+		else
+		{
+			SelectedStaticMesh->SetHiddenInGame(false);
 		}
 		break;
 	}
