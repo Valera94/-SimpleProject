@@ -1,8 +1,5 @@
 # -SimpleProject for HeadHunter
-С++ SimpleProject
-
-• Press to download [SimpleProject-TestMovement](https://drive.google.com/file/d/1BtmU8JW-ttMAw_RstFgv0tuY9B9Yg6Xr/view?usp=sharing)
-
+С++ SimpleProject => Press to download [SimpleProject-TestMovement](https://drive.google.com/file/d/1BtmU8JW-ttMAw_RstFgv0tuY9B9Yg6Xr/view?usp=sharing)
 
 > [!WARNING]
 > When the project creation stage reaches the level of deep knowledge and tricks, the project will be closed for download and review, at the moment you see a simple form of code that I don't mind giving away.
