@@ -27,7 +27,7 @@
 
 
 
-+ Step 3 - The project will be closed, but a demo version of the game with possible results will be available.
++ Step 3 - The project is in a closed repository. But there will be access to the demo version..
  -Adding global logic and configuring ChunkManager and Chunk.
    - Adding logic for working with LightWeightInstanceStaticMeshMesh.
    - Create a path calculation algorithm using VectorFieldMovement
