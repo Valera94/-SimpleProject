@@ -18,5 +18,5 @@ private:
 
 	//DataResourcesForGame
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "PlayGameInformation", meta = (AllowPrivateAccess))
-	FDataResourcesEquipment DataResourcesEquipment;
+	FDT_ResourcesInformation DataResourcesEquipment;
 };

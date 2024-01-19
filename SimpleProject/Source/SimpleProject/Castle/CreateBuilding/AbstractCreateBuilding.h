@@ -7,6 +7,7 @@
 #include "SimpleProject/Input/InputConfigData.h"
 #include "AbstractCreateBuilding.generated.h"
 
+class USpringArmComponent;
 enum class ELeftClickStatus : uint8;
 
 
@@ -42,11 +43,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CreateBuilding")
 	void ChangeSelectedMesh(UStaticMesh* SelectedMesh);
 
+	//SelectedStaticMesh from UI
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components", meta = (AllowPrivateAccess))
+	UStaticMeshComponent* SelectedStaticMesh;
+
 protected:
 
-	//SelectedStaticMesh from UI
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = "Components",meta=(AllowPrivateAccess))
-	UStaticMeshComponent* SelectedStaticMesh;
+	//SpringArm
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components", meta = (AllowPrivateAccess))
+	USpringArmComponent* SpringArm;
+
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	UInputConfigData* InputConfigData;
@@ -55,6 +61,7 @@ protected:
 	UFUNCTION()
 	virtual void Bind_ChangeStatusClick(const EWhatWasPressed& WhatWasPressed, const EClickStatus& ClickStatus);
 
+
 	UFUNCTION(BlueprintCallable, Category = "CreateBuilding")
 	void ChangeActorLocation();
 
@@ -62,7 +69,6 @@ protected:
 	//Value, for GridLocation.
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess))
 	float GridStep= 20.f;
-
 
 
 };

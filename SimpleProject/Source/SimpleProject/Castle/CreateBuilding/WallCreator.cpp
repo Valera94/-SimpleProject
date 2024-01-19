@@ -47,8 +47,10 @@ void AWallCreator::Tick(float DeltaTime)
 	{
 		if(ISM_90->GetInstanceCount()>=2 || ISM_45->GetInstanceCount()>=1)
 		{
+			
 			//ToDo Send To ManagerInstance
 		}
+
 		ChangeActorLocation();
 	}
 	else

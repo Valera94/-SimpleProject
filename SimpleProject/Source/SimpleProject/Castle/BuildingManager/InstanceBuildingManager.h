@@ -17,6 +17,16 @@ struct FStructWallInformation
 
 };
 
+UENUM(BlueprintType, Category = "InstanceBuildingManager|Enum")
+enum EStatusBuild : uint8
+{
+	SB_Waiting			UMETA(DisplayName = "Stage Waiting"),
+	SB_Building			UMETA(DisplayName = "Stage Process Building"),
+	SB_NeedWorkers		UMETA(DisplayName = "Stage Need Workers"),
+	SB_WaitingWorker	UMETA(DisplayName = "Stage Waiting Worker"),
+};
+
+
 
 UCLASS()
 class SIMPLEPROJECT_API AInstanceBuildingManager : public AActor

@@ -24,7 +24,10 @@ enum class EWhatWasPressed : uint8
 	WWP_LeftClick UMETA(DisplayName = "LeftClick "),
 	WWP_RightClick UMETA(DisplayName = "RightClick "),
 	WWP_MiddleClick UMETA(DisplayName = "MiddleClick "),
-	WWP_WASDClick UMETA(DisplayName = "WASDClick ")
+	WWP_WASDClick UMETA(DisplayName = "WASDClick "),
+	WWP_QClick UMETA(DisplayName = "QClick "),
+	WWP_EClick UMETA(DisplayName = "EClick "),
+
 };
 
 
@@ -53,6 +56,8 @@ public:
 		{EWhatWasPressed::WWP_MiddleClick, EClickStatus::CS_UnPressed},
 		{EWhatWasPressed::WWP_RightClick, EClickStatus::CS_UnPressed},
 		{EWhatWasPressed::WWP_WASDClick, EClickStatus::CS_UnPressed},
+		{EWhatWasPressed::WWP_QClick, EClickStatus::CS_UnPressed},
+		{EWhatWasPressed::WWP_EClick, EClickStatus::CS_UnPressed},
 	};
 
 
@@ -85,6 +90,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputAction* InputRightClickMouse;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* InputQClick;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* InputEClick;
 
 	float TargetArmLength = 0.f;
 

@@ -7,9 +7,6 @@
 #include "UObject/NoExportTypes.h"
 #include "GeneralGameData.generated.h"
 
-/**
- * 
- */
 
 #pragma region /* *GeneralGameData|Enum */
 
@@ -17,7 +14,7 @@
   * *This "Enum" controls the camera view.
   */
 
-UENUM(BlueprintType, Category = "GeneralGameData|Enum")
+UENUM(BlueprintType)
 enum class ETypeCameraView : uint8
 {
 	//ToDo Change after understanding the naming
@@ -39,73 +36,120 @@ enum class ETypeCameraView : uint8
 
 
 
-#pragma region /* *GeneralGameData|DataResources */
+#pragma region /* *GeneralGameData */
 
-//ToDo To display 2D images, we need to use an atlas.
 
-USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources|InformationView")
-struct FResourcesInformationView
+//It is used for visual representation of both the world and UI/UX.
+USTRUCT(BlueprintType)
+struct FStruct_Information
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category= "Setting")
+
+	//To display 2D images, we need to use an atlas.
+	//It is necessary to put a pre-prepared material with an atlas texture into this material.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting|Texture")
+	TSoftObjectPtr<UMaterialInstance> MaterialInstance;
+
+	//Use together with "MaterialInstance" as a result it will give a "2D Image"
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting|Texture")
 	FVector2D UVCoordinateForTexture;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Setting")
-	TSoftObjectPtr<UStaticMesh> StaticMesh;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting|WorldPresentation")
+	TSoftObjectPtr<UStaticMesh> WorldPresentationMesh;
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting|Description")
+	FText ShortText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting|Description")
+	FText LongText;
 
 };
+
+//*************************************************************
+
+USTRUCT(BlueprintType)
+struct FDT_ResourcesInformation : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FStruct_Information ResourcesInformation;
+};
+
+//*************************************************************
 
 
 
 /*
- *The place of accumulation of resources for different categorizations.
+ * It is included in the structure for a possible upgrade of resources,
+ * taking into account related areas. Sword + Oil. Axe + Fire particles.
+ * In this way, you can combine completely interesting possibilities of combinations.
  */
 
-USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
-struct FDataResourcesFood
+USTRUCT(BlueprintType)
+struct FStruct_InvestAndReceiveResources
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* DTResources;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText DataTableRow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 AmountResources;
+};
+
+//*************************************************************
+
+/*
+ *The structure for the visual representation of the building
+ *and additional information with the production.
+ */
+
+USTRUCT(BlueprintType)
+struct FStruct_IndustryBuilding
 {
 	GENERATED_BODY()
 
-	//It is necessary to put a pre-prepared material with an atlas texture into this material.
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Setting")
-	UMaterialInstance* MaterialInstanceFood; 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GeneralGameData|InformationView")
+	FStruct_Information InformationBuilding;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	TArray<FResourcesInformationView> ResourcesInformationView;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GeneralGameData|Worker")
+	int32 AmountWorker;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GeneralGameData|ResourcesForProduction")
+	TArray<FStruct_InvestAndReceiveResources> ResourcesForProduction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GeneralGameData|ResourcesForProduction")
+	TArray <FStruct_InvestAndReceiveResources> ResourcesProduced;
 
 };
 
-USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
-struct FDataResourcesEquipment
-{
 
-GENERATED_BODY()
-
-	//It is necessary to put a pre-prepared material with an atlas texture into this material.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	UMaterialInstance* MaterialInstanceWeapon;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	TArray<FResourcesInformationView> ResourcesInformationView;
-};
-
-USTRUCT(BlueprintType, Category = "GeneralGameData|DataResources")
-struct FDataResourcesRest
+USTRUCT(BlueprintType, Category = "GeneralGameData")
+struct FDT_IndustryBuilding : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	//It is necessary to put a pre-prepared material with an atlas texture into this material.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	UMaterialInstance* MaterialInstanceRest;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	TArray<FResourcesInformationView> ResourcesInformationView;
+public:
+	//Arr used how Level Build
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FStruct_IndustryBuilding> LevelIndustryBuilding;
 };
 #pragma endregion
 
 
+
+
+//GameplayTag
 
 namespace ProjectGameplayTags
 {
@@ -117,9 +161,10 @@ namespace ProjectGameplayTags
 
 };
 
+
 UCLASS()
 class SIMPLEPROJECT_API UGeneralGameData : public UObject
 {
 	GENERATED_BODY()
-	
+
 };

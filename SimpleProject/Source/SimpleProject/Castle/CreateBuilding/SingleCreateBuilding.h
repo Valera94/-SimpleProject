@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AbstractCreateBuilding.h"
 #include "SingleCreateBuilding.generated.h"
 
 UCLASS()
-class SIMPLEPROJECT_API ASingleCreateBuilding : public AActor
+class SIMPLEPROJECT_API ASingleCreateBuilding : public AAbstractCreateBuilding
 {
 	GENERATED_BODY()
 	

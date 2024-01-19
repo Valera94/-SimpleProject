@@ -16,6 +16,7 @@
  * This entity stores information about the movement and binding of buttons.
  */
 
+class AAbstractCreateBuilding;
 UCLASS(BlueprintType, Blueprintable, Config = Game)
 class SIMPLEPROJECT_API APlayerCamera_Project : public APawn
 {
@@ -44,7 +45,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RTS Camera", meta = (AllowPrivateAccess))
 	class UCameraComponent* CameraComponent;
 
+
+
 #pragma endregion
+
 
 #pragma region /* *Logic Input System  */
 
@@ -95,6 +99,11 @@ protected:
 	//Handle Wheel Right Mouse
 	void IA_RightClickMouseInput(const FInputActionValue& Value);
 
+	//Q Press
+	void IA_QInput(const FInputActionValue& Value);
+
+	//E Press
+	void IA_EInput(const FInputActionValue& Value);
 
 #pragma endregion
 
@@ -109,7 +118,7 @@ protected:
 	 **TargetPercentFromBorder	= Clamp (0.01 , 0.07) trigger to move.
 	 **DynamicChangeSpeed		= Used to change the speed depending on the given value, Spring Arm Lenght is usually used.
 	*/
-	void MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed);
+	void MoveUseViewportBorderRangeTrigger(const float& DeltaSecondScale, const float& DynamicChangeSpeed);
 
 	void ChangeArmLength(const float& DeltaSecond);
 
@@ -127,4 +136,5 @@ protected:
 	ETypeCameraView CurrentTypeCameraView;
 
 #pragma endregion
+
 };

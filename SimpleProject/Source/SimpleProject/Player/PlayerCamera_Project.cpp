@@ -71,9 +71,11 @@ void APlayerCamera_Project::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	MoveUseTriggerTheViewportBorders(DeltaSeconds, SpringArm->TargetArmLength);
+	MoveUseViewportBorderRangeTrigger(DeltaSeconds, SpringArm->TargetArmLength);
 	ChangeArmLength(DeltaSeconds);
 }
+
+
 
 
 #pragma region /* *Realisation Input System */
@@ -122,6 +124,13 @@ void APlayerCamera_Project::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputRightClickMouse, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_RightClickMouseInput);
 	L_EnhancedInputComponent->BindAction(InputConfigData->InputRightClickMouse, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_RightClickMouseInput);
 
+	// Q Click
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputQClick, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_QInput);
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputQClick, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_QInput);
+
+	// E Click
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputEClick, ETriggerEvent::Started, this, &APlayerCamera_Project::IA_EInput);
+	L_EnhancedInputComponent->BindAction(InputConfigData->InputEClick, ETriggerEvent::Completed, this, &APlayerCamera_Project::IA_EInput);
 
 }
 
@@ -272,6 +281,7 @@ void APlayerCamera_Project::IA_RightClickMouseInput(const FInputActionValue& Val
 		if (ChangeValue)
 		{
 			OnChangeStatusCLick(EWhatWasPressed::WWP_RightClick, EClickStatus::CS_Pressed);
+
 			GEngine->AddOnScreenDebugMessage(0, 3.f, FColor::Red, "sad");
 		}
 		else
@@ -281,6 +291,42 @@ void APlayerCamera_Project::IA_RightClickMouseInput(const FInputActionValue& Val
 	}
 
 
+}
+
+void APlayerCamera_Project::IA_QInput(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+
+		const float ChangeValue = Value.Get<bool>();
+
+		if (ChangeValue)
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_QClick, EClickStatus::CS_Pressed);
+		}
+		else
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_QClick, EClickStatus::CS_UnPressed);
+		}
+	}
+}
+
+void APlayerCamera_Project::IA_EInput(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+
+		const float ChangeValue = Value.Get<bool>();
+
+		if (ChangeValue)
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_EClick, EClickStatus::CS_Pressed);
+		}
+		else
+		{
+			OnChangeStatusCLick(EWhatWasPressed::WWP_EClick, EClickStatus::CS_UnPressed);
+		}
+	}
 }
 
 
@@ -318,7 +364,7 @@ void APlayerCamera_Project::Bind_ChangeTypeCameraView(ETypeCameraView TypeCamera
 	CurrentTypeCameraView = TypeCameraView;
 }
 
-void APlayerCamera_Project::MoveUseTriggerTheViewportBorders(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
+void APlayerCamera_Project::MoveUseViewportBorderRangeTrigger(const float& DeltaSecondScale, const float& DynamicChangeSpeed)
 {
 	if (InputConfigData->GetStatusInput(EWhatWasPressed::WWP_WASDClick) == EClickStatus::CS_UnPressed && CurrentTypeCameraView != ETypeCameraView::ETGV_Menu)
 	{

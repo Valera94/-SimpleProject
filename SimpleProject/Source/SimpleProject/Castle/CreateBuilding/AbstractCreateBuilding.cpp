@@ -4,6 +4,7 @@
 #include "AbstractCreateBuilding.h"
 
 #include "Engine/StaticMeshSocket.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SimpleProject/Player/PlayerCamera_Project.h"
@@ -15,9 +16,17 @@ AAbstractCreateBuilding::AAbstractCreateBuilding()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
+	//SpringArm->SetupAttachment(GetRootComponent());
+	RootComponent = SpringArm;
+	SpringArm->bEnableCameraLag = true;
+	SpringArm->CameraLagSpeed = 20.f;
+	SpringArm->CameraLagMaxDistance = 300.f;
+	SpringArm->TargetArmLength = 0.f;
+
 	SelectedStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("SelectedStaticMesh");
 	SelectedStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SelectedStaticMesh->SetupAttachment(GetRootComponent());
+	SelectedStaticMesh->SetupAttachment(SpringArm);
 
 }
 
@@ -64,10 +73,12 @@ void AAbstractCreateBuilding::Bind_ChangeStatusClick(const EWhatWasPressed& What
 		if (ClickStatus == EClickStatus::CS_Pressed)
 		{
 			SetActorHiddenInGame(true);
+			SpringArm->bEnableCameraLag = false;
 		}
 		else
 		{
 			SetActorHiddenInGame(false);
+			SpringArm->bEnableCameraLag = true;
 		}
 		break;
 
@@ -79,6 +90,19 @@ void AAbstractCreateBuilding::Bind_ChangeStatusClick(const EWhatWasPressed& What
 		else
 		{
 			SelectedStaticMesh->SetHiddenInGame(false);
+		}
+		break;
+	case EWhatWasPressed::WWP_QClick:
+		if (ClickStatus == EClickStatus::CS_Pressed)
+		{
+			SelectedStaticMesh->AddRelativeRotation(FRotator(0.f, 45.f, 0.f));
+		}
+		break;
+
+	case EWhatWasPressed::WWP_EClick:
+		if (ClickStatus == EClickStatus::CS_Pressed)
+		{
+			SelectedStaticMesh->AddRelativeRotation(FRotator(0.f, -45.f, 0.f));
 		}
 		break;
 	}
@@ -93,6 +117,8 @@ void AAbstractCreateBuilding::ChangeActorLocation()
 		{
 			SetActorLocation(FVector(UKismetMathLibrary::GridSnap_Float(HitResult.Location.X, GridStep * 2),
 				UKismetMathLibrary::GridSnap_Float(HitResult.Location.Y, GridStep * 2), HitResult.Location.Z));
+
+			
 		}
 
 }
